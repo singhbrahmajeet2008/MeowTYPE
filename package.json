@@ -4,6 +4,7 @@
   "description": "meow-typing // Cyber Hacker Terminal Typing Speed Arena with 1/3 Judge Terminal and 2/3 Typing Workspace",
   "main": "server.js",
   "scripts": {
+    "build": "echo Static deployment ready",
     "start": "node server.js"
   },
   "keywords": [
