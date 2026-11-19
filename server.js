@@ -90,7 +90,13 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`\n🚀 meow-typing is running securely at: http://localhost:${PORT}`);
-  console.log(`💡 Press Ctrl+C to stop the server\n`);
-});
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`\n🚀 meow-typing is running securely at: http://localhost:${PORT}`);
+    console.log(`💡 Press Ctrl+C to stop the server\n`);
+  });
+}
+
+module.exports = (req, res) => {
+  server.emit('request', req, res);
+};
