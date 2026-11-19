@@ -959,14 +959,14 @@ html, body {
 
 .meme-slot-frame {
   background: #0b0e14;
-  border: 1px dashed var(--card-border);
+  border: 1px solid var(--card-border);
   border-radius: 8px;
-  padding: 14px 10px;
+  padding: 0;
   flex: 1;
+  min-height: 250px;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  text-align: center;
   position: relative;
   overflow: hidden;
 }
@@ -974,23 +974,27 @@ html, body {
 .meme-inner {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  gap: 10px;
   width: 100%;
   height: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 .judge-cat-avatar {
-  max-width: 85%;
-  max-height: 140px;
-  width: auto;
-  height: auto;
-  border-radius: 10px;
-  object-fit: contain;
-  border: 1px solid var(--card-border);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-  transition: transform 0.2s ease;
+  width: 100%;
+  height: 100%;
+  min-height: 250px;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 8px;
+  display: block;
+  border: none;
+  box-shadow: none;
+  transition: transform 0.25s ease;
 }
 
 .judge-cat-avatar:hover {
@@ -1133,18 +1137,7 @@ html, body {
 }
 
 .meme-caption {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  line-height: 1.4;
-}
-
-.meme-caption strong {
-  display: block;
-  color: var(--text-main);
-  font-family: var(--font-ui);
-  font-size: 0.88rem;
-  font-weight: 700;
-  margin-bottom: 2px;
+  display: none !important;
 }
 
 /* Right 2/3 Typing Arena Pane */
