@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>meow-typing • Professional Touch Typing Practice</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="assets/cat-logo.png">
+</head>
+
+<body class="theme-dark">
+  <!-- Particle FX Canvas -->
+  <canvas id="fxCanvas"></canvas>
+
+  <div class="app-container">
+    <!-- Clean Top Header -->
+    <header class="app-header">
+      <div class="brand" id="brandHomeBtn" role="button" tabindex="0" title="meow-typing home">
+        <div class="brand-logo-container">
+          <img src="assets/cat-logo.png" alt="meow-typing polite cat" class="brand-cat-img">
+          <span class="gaming-online-dot"></span>
+        </div>
+        <div class="brand-info">
+          <div class="brand-name">meow-typing <span class="badge-pro">PRO</span></div>
+          <div class="brand-slogan">SERIOUS TOUCH-TYPING • PURR-FECT FOCUS</div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs: Practice Arena vs Analysis Dashboard -->
+      <nav class="header-nav-tabs" aria-label="Main Navigation">
+        <button id="navPracticeBtn" class="nav-tab-btn active" title="Typing Arena">
+          <span>⌨️ Practice</span>
+        </button>
+        <button id="navAnalysisBtn" class="nav-tab-btn" title="Detailed Analytics & Word Mastery">
+          <span>📊 Analysis</span>
+        </button>
+      </nav>
+
+      <!-- Clean Header Right: Auth & Cloud, Best Score, Quick Audio -->
+      <div class="header-right-controls">
+        <!-- Google OAuth & User Profile Module -->
+        <div id="authContainer" class="auth-container">
+          <!-- Logged Out State: Google Login Cyber Button -->
+          <button id="googleLoginBtn" class="cyber-google-btn" title="Sign in with Google to sync stats & records">
+            <svg class="google-svg-icon" viewBox="0 0 24 24" width="16" height="16">
+              <path fill="#4285F4"
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="#34A853"
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="#FBBC05"
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+              <path fill="#EA4335"
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z" />
+            </svg>
+            <span>Google Login</span>
+          </button>
+
+          <!-- Logged In State: User Avatar & Menu Pill -->
+          <div id="userProfileChip" class="user-profile-chip hidden" tabindex="0" role="button" aria-haspopup="true">
+            <div class="user-avatar-wrap">
+              <img id="userAvatarImg" src="assets/cat-logo.png" alt="User Avatar" class="user-avatar-img">
+              <span class="user-sync-status-dot synced" id="userSyncDot" title="Supabase Cloud Synced"></span>
+            </div>
+            <span class="user-display-name" id="userDisplayName">Typist</span>
+            <span class="dropdown-caret">▾</span>
+          </div>
+
+          <!-- Cyber User Dropdown Menu -->
+          <div id="userDropdownMenu" class="user-dropdown-menu hidden">
+            <div class="dropdown-header">
+              <div class="dropdown-user-info">
+                <strong id="dropdownUserName">Typist</strong>
+                <span class="dropdown-user-email" id="dropdownUserEmail">typist@gmail.com</span>
+              </div>
+              <span class="dropdown-cloud-badge">⚡ SUPABASE SYNCED</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" id="openRecordsBtn">
+              <span class="dropdown-icon">📜</span>
+              <span>All Test Records</span>
+            </button>
+            <button class="dropdown-item" id="menuAnalysisBtn">
+              <span class="dropdown-icon">📊</span>
+              <span>Performance Analytics</span>
+            </button>
+            <button class="dropdown-item" id="openCloudSettingsBtn">
+              <span class="dropdown-icon">⚙️</span>
+              <span>Supabase Settings</span>
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item text-danger" id="logoutBtn">
+              <span class="dropdown-icon">🚪</span>
+              <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="stat-pill" title="Your all-time highest WPM record saved in cloud/browser">
+          <span class="pill-lbl">🏆 BEST:</span>
+          <strong class="pill-val text-neon" id="globalBestWpm">0 WPM</strong>
+        </div>
+
+        <button id="toggleMusicBtn" class="gaming-icon-btn" title="Toggle Typing Music">
+          <span id="musicIcon">🎵</span>
+        </button>
+
+        <button id="toggleAudioBtn" class="gaming-icon-btn" title="Toggle Mechanical Audio">
+          <span id="audioIcon">🎧</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Window Stage (Mac OS Window Chrome) -->
+    <main class="window-frame" id="mainFrame">
+      <div class="window-titlebar">
+        <div class="window-dots">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <div class="window-title" id="windowTitleText">meow-typing — Setup</div>
+        <div class="window-mode-badge" id="arenaModeBadge">60s • Normal • Quotes</div>
+      </div>
+
+      <!-- ====================================================================
+           VIEW 1: LOBBY / SETUP (Centered, Clean As It Was Before)
+           ==================================================================== -->
+      <section id="lobbyView" class="view-panel active-view">
+        <div class="lobby-content">
+          <!-- Mascot Hero -->
+          <div class="lobby-hero">
+            <div class="mascot-pod">
+              <img src="assets/cat-logo.png" alt="Polite Cat" class="mascot-img">
+              <span class="mascot-status">ONLINE</span>
+            </div>
+            <h1 class="hero-title">meow-typing</h1>
+            <p class="hero-subtitle">Measure • Improve • Master your typing speed</p>
+          </div>
+
+          <!-- Player Cumulative Stats Strip -->
+          <div class="player-stats-strip">
+            <div class="stat-badge-chip">
+              <span class="stat-chip-icon">🎮</span>
+              <div class="stat-chip-info">
+                <span class="stat-chip-num" id="statTestsCount">0</span>
+                <span class="stat-chip-lbl">Tests Taken</span>
+              </div>
+            </div>
+            <div class="stat-badge-chip">
+              <span class="stat-chip-icon">🏆</span>
+              <div class="stat-chip-info">
+                <span class="stat-chip-num text-neon" id="statHighestRecord">0 WPM</span>
+                <span class="stat-chip-lbl">Peak Speed</span>
+              </div>
+            </div>
+            <div class="stat-badge-chip">
+              <span class="stat-chip-icon">⏱️</span>
+              <div class="stat-chip-info">
+                <span class="stat-chip-num" id="statTimeSpent">0m 0s</span>
+                <span class="stat-chip-lbl">Practice Time</span>
+              </div>
+            </div>
+            <div class="stat-badge-chip">
+              <span class="stat-chip-icon">🎯</span>
+              <div class="stat-chip-info">
+                <span class="stat-chip-num" id="statAvgAccuracy">100%</span>
+                <span class="stat-chip-lbl">Avg Accuracy</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lobby Records & Supabase Cloud Status Bar -->
+          <div class="lobby-cloud-bar">
+            <button id="lobbyViewRecordsBtn" class="btn-records-link"
+              title="Open user typing history & telemetry records">
+              <span class="rec-icon">📜</span>
+              <span>All Saved Records</span>
+              <span class="records-count-chip" id="recordsBadgeCount">0 tests</span>
+            </button>
+
+            <button id="lobbyCloudStatusBtn" class="btn-cloud-status" title="Configure or check Supabase backend">
+              <span class="cloud-status-indicator" id="cloudLedDot"></span>
+              <span id="cloudStatusText">Supabase: Ready</span>
+            </button>
+          </div>
+
+          <!-- Setup Card -->
+          <div class="setup-card">
+            <!-- 1. Test Type (Time vs Words) -->
+            <div class="setup-row">
+              <span class="row-label">TEST TYPE</span>
+              <div class="pill-group" id="testTypePicker">
+                <button class="pill-btn active" data-type="time" data-test-type="time">⏱️ Time</button>
+                <button class="pill-btn" data-type="words" data-test-type="words">📝 Words</button>
+              </div>
+            </div>
+
+            <!-- 2A. Duration Picker (when Time type is active) -->
+            <div class="setup-row" id="durationPickerRow">
+              <div class="row-label-row">
+                <span class="row-label">TEST DURATION</span>
+                <span class="row-sub-hint" id="currentDurationHint">60s</span>
+              </div>
+              <div class="pill-group" id="durationPicker">
+                <button class="pill-btn" data-duration="15">15s</button>
+                <button class="pill-btn" data-duration="30">30s</button>
+                <button class="pill-btn active" data-duration="60">60s</button>
+                <button class="pill-btn" data-duration="120">120s</button>
+                <button class="pill-btn" data-duration="custom" id="customDurationBtn">⚙️ Custom</button>
+              </div>
+              <div class="custom-input-inline hidden" id="customDurationInputArea">
+                <input type="number" id="customDurationInput" min="5" max="600" value="45" class="cyber-input-inline"
+                  placeholder="Seconds (5-600)">
+                <button id="applyCustomDurationBtn" class="btn-subtle-apply">Apply</button>
+              </div>
+            </div>
+
+            <!-- 2B. Word Count Target Picker (when Words type is active) -->
+            <div class="setup-row hidden" id="wordCountPickerRow">
+              <div class="row-label-row">
+                <span class="row-label">WORD COUNT TARGET</span>
+                <span class="row-sub-hint" id="currentWordCountHint">25 words</span>
+              </div>
+              <div class="pill-group" id="wordCountPicker">
+                <button class="pill-btn" data-words="10">10</button>
+                <button class="pill-btn active" data-words="25">25</button>
+                <button class="pill-btn" data-words="50">50</button>
+                <button class="pill-btn" data-words="100">100</button>
+                <button class="pill-btn" data-words="custom" id="customWordsBtn">⚙️ Custom</button>
+              </div>
+              <div class="custom-input-inline hidden" id="customWordsInputArea">
+                <input type="number" id="customWordsInput" min="5" max="500" value="35" class="cyber-input-inline"
+                  placeholder="Words (5-500)">
+                <button id="applyCustomWordsBtn" class="btn-subtle-apply">Apply</button>
+              </div>
+            </div>
+
+            <!-- 3. Practice Genre -->
+            <div class="setup-row">
+              <span class="row-label">PRACTICE MODE</span>
+              <div class="pill-group" id="genrePicker">
+                <button class="pill-btn active" data-genre="quotes">Quotes</button>
+                <button class="pill-btn" data-genre="words">Words</button>
+                <button class="pill-btn" data-genre="code">Code</button>
+                <button class="pill-btn" data-genre="numbers">Numbers</button>
+                <button class="pill-btn" data-genre="custom">Custom</button>
+              </div>
+            </div>
+
+            <!-- Custom Text Input (hidden until selected) -->
+            <div class="custom-text-wrapper hidden" id="customTextInputArea">
+              <textarea id="customTextInput"
+                placeholder="Paste your custom study text, essay, or code here..."></textarea>
+            </div>
+
+            <!-- Difficulty Selector -->
+            <div class="setup-row">
+              <span class="row-label">DIFFICULTY</span>
+              <div class="pill-group" id="difficultyPicker">
+                <button class="pill-btn" data-difficulty="easy">Easy</button>
+                <button class="pill-btn active" data-difficulty="medium">Normal</button>
+                <button class="pill-btn" data-difficulty="hard">Expert</button>
+              </div>
+            </div>
+
+            <!-- Big Start Button -->
+            <div class="setup-actions">
+              <button id="startTestBtn" class="btn-primary-large">
+                <span>Start Test</span>
+                <span class="btn-arrow">▶</span>
+              </button>
+            </div>
+
+            <!-- Step Guide Pill -->
+            <div class="step-guide">
+              <span class="step-icon">🎯</span>
+              <span class="step-text"><strong>Step 1:</strong> Pick duration & difficulty, then press Start or simply
+                start typing!</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 2: ARENA VIEW (SPLIT SCREEN: 1/3 JUDGE TERMINAL & 2/3 TYPING ARENA)
+           ==================================================================== -->
+      <section id="arenaView" class="view-panel hidden">
+        <div class="split-arena-workspace">
+          <!-- LEFT 1/3 SIDE: JUDGE TERMINAL -->
+          <aside class="judge-pane">
+            <div class="pane-header">
+              <span class="pane-tag">Judge Terminal</span>
+              <div class="judge-led-status">
+                <span class="led-dot"></span>
+                <span id="judgeStatusLabel">OBSERVING</span>
+              </div>
+            </div>
+
+            <div class="judge-body">
+              <!-- Live Evaluation Verdict -->
+              <div class="verdict-box">
+                <span class="vb-lbl">VERDICT:</span>
+                <div class="vb-status" id="judgeVerdictText">AWAITING INPUT</div>
+                <span class="vb-sub" id="judgeVerdictSub">Rhythm cadence: 0.00 ms jitter</span>
+              </div>
+
+              <!-- DEDICATED MEME CHAMBER (Reserved for User's Memes) -->
+              <div class="meme-chamber-box">
+                <div class="mc-header">
+                  <span class="mc-tag">MEME CHAMBER</span>
+                  <span class="mc-sub" id="memeChamberStatus">READY</span>
+                </div>
+
+                <div class="meme-slot-frame" id="judgeMemeFeed">
+                  <div class="meme-inner" id="userMemeSlot">
+                    <img src="assets/cat-logo.png" alt="Judge Cat" class="judge-cat-avatar" id="judgeMemeImg">
+                    <div class="meme-caption" id="judgeMemeCaption">
+                      <strong>Meme Chamber</strong>
+                      <span>Your memes will be displayed right here!</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <!-- RIGHT 2/3 SIDE: TYPING ARENA (Simple, Clean, Distraction-Free) -->
+          <div class="typing-pane">
+            <!-- Live HUD Ticker -->
+            <div class="arena-hud">
+              <div class="hud-card" id="hudMetricCard1">
+                <span class="hud-label" id="hudTimerLabel">TIME LEFT</span>
+                <div class="hud-value" id="hudTimer">1:00</div>
+                <span class="hud-sub" id="hudTimerSub">countdown</span>
+                <div class="hud-progress-bar">
+                  <div class="hud-progress-fill" id="hudTimerBar" style="width: 100%;"></div>
+                </div>
+              </div>
+
+              <div class="hud-card">
+                <span class="hud-label">WPM (LIVE)</span>
+                <div class="hud-value-cyan" id="hudWpm">0</div>
+                <span class="hud-sub">words/min</span>
+              </div>
+
+              <div class="hud-card">
+                <span class="hud-label">ACCURACY</span>
+                <div class="hud-value" id="hudAccuracy">100%</div>
+                <span class="hud-sub" id="hudKeystrokes">0 chars</span>
+              </div>
+
+              <div class="hud-card">
+                <span class="hud-label">STREAK</span>
+                <div class="hud-value-amber" id="hudStreak">0 🔥</div>
+                <span class="hud-sub" id="hudStreakBonus">x1 Multiplier</span>
+              </div>
+            </div>
+
+            <!-- Text Display Card (Simple During Typing) -->
+            <div class="typing-box-container" id="typingArenaBox">
+              <div class="text-display-screen" id="textDisplayCard" tabindex="0">
+                <div id="wordsContainer" class="words-container">
+                  <!-- Dynamically rendered word spans & letters with Caret -->
+                </div>
+              </div>
+
+              <!-- Full-coverage accessible input -->
+              <input type="text" id="hiddenInput" class="accessible-hidden-input" autocomplete="off" autocorrect="off"
+                autocapitalize="off" spellcheck="false" aria-label="Typing input">
+
+              <div class="typing-cue-status">
+                <span class="cue-dot"></span>
+                <span id="focusStatusText">Start typing on your keyboard — the timer begins on your first
+                  keystroke.</span>
+              </div>
+            </div>
+
+            <!-- Arena Bottom Bar -->
+            <div class="arena-footer">
+              <div class="footer-stats">
+                <span class="stat-badge badge-correct">
+                  ✓ Correct: <strong id="correctCharsCount">0</strong>
+                </span>
+                <span class="stat-badge badge-errors">
+                  ✗ Errors: <strong id="errorCharsCount">0</strong>
+                </span>
+              </div>
+
+              <div class="footer-actions">
+                <button id="restartTestBtn" class="btn-subtle" title="Restart Test (Tab + Enter)">
+                  <span>Restart</span>
+                  <kbd class="kbd-key">Tab</kbd>
+                </button>
+                <button id="homeBtn" class="btn-subtle" title="Return to Setup">
+                  <span>Home</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 3: RESULTS SUMMARY & BREAKDOWN
+           ==================================================================== -->
+      <section id="resultsView" class="view-panel hidden">
+        <div class="results-container">
+          <div class="results-header">
+            <div class="results-meme-hero">
+              <img src="assets/meme-shaka.jpg" alt="Test Finished Cat" class="results-cat-img" id="resultsCatImg">
+              <span class="results-meme-badge" id="resultsMemeBadge">🤙 PURR-FECT RUN</span>
+            </div>
+            <div class="results-trophy-badge" id="resultsBadge">🎉 TEST COMPLETE!</div>
+            <h2 class="results-title" id="resultsTitle">Outstanding Performance!</h2>
+            <p class="results-subtitle" id="resultsSubtitle">Here is your detailed speed and accuracy evaluation.</p>
+          </div>
+
+          <!-- Top Stats Ticker -->
+          <div class="results-stats-row">
+            <div class="result-card stat-final-wpm">
+              <span class="card-label">FINAL WPM</span>
+              <div class="card-value text-neon" id="finalWpmValue">88</div>
+              <span class="card-rank" id="finalRankBadge">Speed Demon</span>
+            </div>
+
+            <div class="result-card stat-avg-wpm">
+              <span class="card-label">AVERAGE WPM</span>
+              <div class="card-value" id="avgWpmValue">84</div>
+              <span class="card-detail" id="rawWpmValue">Raw: 89 WPM</span>
+            </div>
+
+            <div class="result-card stat-accuracy">
+              <span class="card-label">ACCURACY</span>
+              <div class="card-value" id="finalAccValue">99%</div>
+              <span class="card-detail" id="accDetail">1 Error / 342 Chars</span>
+            </div>
+
+            <div class="result-card stat-high-score">
+              <span class="card-label">ALL-TIME BEST</span>
+              <div class="card-value text-amber" id="personalBestValue">88</div>
+              <span class="card-detail text-amber" id="pbStatus">🏆 RECORD</span>
+            </div>
+          </div>
+
+          <!-- Results Breakdown Graph -->
+          <div class="breakdown-chart-card">
+            <div class="chart-header">
+              <span class="chart-title">RESULTS BREAKDOWN (WPM OVER TIME)</span>
+            </div>
+            <div class="chart-canvas-wrapper">
+              <canvas id="wpmChartCanvas" width="800" height="180"></canvas>
+            </div>
+          </div>
+
+          <!-- Results Actions -->
+          <div class="results-actions">
+            <button id="playAgainBtn" class="btn-primary-large">
+              <span>Play Again (Enter)</span>
+              <span>🔄</span>
+            </button>
+            <button id="practiceMistakesBtn" class="btn-secondary" title="Practice only the words you missed">
+              <span>Practice Missed Words</span>
+            </button>
+            <button id="resultsAnalysisBtn" class="btn-secondary" title="View detailed telemetry and word performance">
+              <span>📊 View Analysis</span>
+            </button>
+            <button id="resultsHomeBtn" class="btn-secondary">
+              <span>Change Settings</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================================
+           VIEW 4: COMPREHENSIVE PERFORMANCE ANALYTICS & WORD INTELLIGENCE
+           ==================================================================== -->
+      <section id="analyticsView" class="view-panel hidden">
+        <div class="analytics-container">
+          <!-- Analytics Header -->
+          <div class="analytics-header">
+            <div class="ah-left">
+              <h2 class="analytics-title">📊 Performance Analytics & Word Intelligence</h2>
+              <p class="analytics-subtitle">Comprehensive breakdown of your typing telemetry, duration benchmarks, and
+                vocabulary mastery.</p>
+            </div>
+            <div class="ah-actions">
+              <button id="analyticsExportBtn" class="btn-subtle" title="Export your telemetry records as JSON">
+                <span>📥 Export Data</span>
+              </button>
+              <button id="analyticsBackBtn" class="btn-primary-small" title="Return to Typing Arena">
+                <span>⌨️ Practice Arena</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Career KPI Cards -->
+          <div class="analytics-kpi-grid">
+            <div class="ak-card">
+              <div class="ak-icon">🎮</div>
+              <div class="ak-content">
+                <span class="ak-label">TOTAL TESTS</span>
+                <div class="ak-val" id="akTotalTests">0</div>
+                <span class="ak-sub" id="akTestsSplit">0 Time • 0 Words</span>
+              </div>
+            </div>
+            <div class="ak-card">
+              <div class="ak-icon">🏆</div>
+              <div class="ak-content">
+                <span class="ak-label">ALL-TIME BEST</span>
+                <div class="ak-val text-neon" id="akBestWpm">0 WPM</div>
+                <span class="ak-sub" id="akBestDetail">Peak speed</span>
+              </div>
+            </div>
+            <div class="ak-card">
+              <div class="ak-icon">⚡</div>
+              <div class="ak-content">
+                <span class="ak-label">AVERAGE SPEED</span>
+                <div class="ak-val" id="akAvgWpm">0 WPM</div>
+                <span class="ak-sub" id="akAvgRaw">Raw: 0 WPM</span>
+              </div>
+            </div>
+            <div class="ak-card">
+              <div class="ak-icon">📝</div>
+              <div class="ak-content">
+                <span class="ak-label">TOTAL WORDS TYPED</span>
+                <div class="ak-val" id="akTotalWords">0</div>
+                <span class="ak-sub" id="akTotalChars">0 keystrokes</span>
+              </div>
+            </div>
+            <div class="ak-card">
+              <div class="ak-icon">⏱️</div>
+              <div class="ak-content">
+                <span class="ak-label">PRACTICE TIME</span>
+                <div class="ak-val" id="akTotalTime">0m 0s</div>
+                <span class="ak-sub">Pure typing duration</span>
+              </div>
+            </div>
+            <div class="ak-card">
+              <div class="ak-icon">🎯</div>
+              <div class="ak-content">
+                <span class="ak-label">GLOBAL ACCURACY</span>
+                <div class="ak-val" id="akGlobalAccuracy">100%</div>
+                <span class="ak-sub" id="akAccuracyErrors">0 total errors</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dual Mode Benchmarks: Time Tests vs Word Count Tests -->
+          <div class="analytics-dual-benchmarks">
+            <!-- Time Mode Benchmarks -->
+            <div class="benchmark-card">
+              <div class="benchmark-header">
+                <div class="bh-title">
+                  <span>⏱️ Time Mode Benchmarks</span>
+                  <small>Performance across standard & custom durations</small>
+                </div>
+              </div>
+              <div class="benchmark-table-wrap">
+                <table class="benchmark-table">
+                  <thead>
+                    <tr>
+                      <th>Duration</th>
+                      <th>Tests</th>
+                      <th>Best WPM</th>
+                      <th>Avg WPM</th>
+                      <th>Avg Accuracy</th>
+                      <th>Best Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="timeBenchmarkTbody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Word Mode Benchmarks -->
+            <div class="benchmark-card">
+              <div class="benchmark-header">
+                <div class="bh-title">
+                  <span>📝 Word Count Benchmarks</span>
+                  <small>Performance across fixed target word lengths</small>
+                </div>
+              </div>
+              <div class="benchmark-table-wrap">
+                <table class="benchmark-table">
+                  <thead>
+                    <tr>
+                      <th>Target</th>
+                      <th>Tests</th>
+                      <th>Best WPM</th>
+                      <th>Avg WPM</th>
+                      <th>Avg Accuracy</th>
+                      <th>Best Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="wordsBenchmarkTbody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- WORD-BY-WORD MASTERY SECTION ("best performance in each word") -->
+          <div class="word-mastery-card">
+            <div class="wm-header">
+              <div>
+                <h3 class="wm-title">🐾 Individual Word Performance & Vocabulary Mastery</h3>
+                <p class="wm-subtitle">Tracks your peak speed, fastest completion time, and error rate for every word
+                  you type.</p>
+              </div>
+              <div class="wm-header-actions">
+                <button id="practiceWeakWordsFromAnalyticsBtn" class="btn-subtle"
+                  title="Drill words where you made mistakes">
+                  <span>🎯 Practice Weak Words</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Filter & Search Toolbar -->
+            <div class="wm-filter-bar">
+              <div class="wm-search-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="wordSearchInput" placeholder="Search any word (e.g. 'practice', 'system')..."
+                  class="wm-search-input">
+              </div>
+              <div class="wm-filter-tabs" id="wordFilterTabs">
+                <button class="wm-tab-btn filter-tab active" data-filter="all">All Words (<span
+                    id="wmCountAll">0</span>)</button>
+                <button class="wm-tab-btn filter-tab" data-filter="mastered">⭐ Mastered (<span
+                    id="wmCountMastered">0</span>)</button>
+                <button class="wm-tab-btn filter-tab" data-filter="proficient">⚡ Proficient (<span
+                    id="wmCountProficient">0</span>)</button>
+                <button class="wm-tab-btn filter-tab" data-filter="weak">⚠️ Needs Work (<span
+                    id="wmCountWeak">0</span>)</button>
+              </div>
+              <div class="wm-sort-wrap">
+                <label for="wordSortSelect">Sort:</label>
+                <select id="wordSortSelect" class="wm-select">
+                  <option value="bestWpm">Best Speed (High to Low)</option>
+                  <option value="fastestMs">Fastest Time (ms)</option>
+                  <option value="accuracy">Highest Accuracy</option>
+                  <option value="timesTyped">Most Typed</option>
+                  <option value="word">Word (A to Z)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Word Performance Table -->
+            <div class="word-table-container">
+              <table class="word-mastery-table">
+                <thead>
+                  <tr>
+                    <th>Word</th>
+                    <th>Status</th>
+                    <th>Best Speed</th>
+                    <th>Fastest Time</th>
+                    <th>Accuracy</th>
+                    <th>Times Typed</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="wordMasteryTbody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+              <div class="empty-words-notice hidden" id="emptyWordsNotice">
+                <span>🐱 No words match your filter. Complete more typing sessions to build your word matrix!</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Complete History Log Table -->
+          <div class="history-log-card">
+            <div class="hl-header">
+              <div class="hl-title">
+                <span>📜 Complete Test Records Log</span>
+                <small id="historyLogCount">0 tests saved</small>
+              </div>
+              <div class="hl-filters" id="historyTypeFilterGroup">
+                <button class="hl-filter-btn pill-btn active" data-filter="all" data-type-filter="all">All</button>
+                <button class="hl-filter-btn pill-btn" data-filter="time" data-type-filter="time">⏱️ Time Only</button>
+                <button class="hl-filter-btn pill-btn" data-filter="words" data-type-filter="words">📝 Words
+                  Only</button>
+              </div>
+            </div>
+
+            <div class="history-table-wrapper">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>Mode</th>
+                    <th>Date & Time</th>
+                    <th>WPM</th>
+                    <th>Raw WPM</th>
+                    <th>Accuracy</th>
+                    <th>Duration</th>
+                    <th>Details</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="historyLogTbody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <span>meow-typing • Measure • Improve • Master</span>
+      <span class="footer-hint">Pro Tip: Press <kbd class="kbd-key">Tab</kbd> to restart anytime</span>
+    </footer>
+  </div>
+
+  <!-- ====================================================================
+       MODAL 1: CLOUD TYPING RECORDS & USER HISTORY MODAL
+       ==================================================================== -->
+  <div id="recordsModal" class="cyber-modal-overlay hidden" role="dialog" aria-modal="true"
+    aria-labelledby="recordsModalTitle">
+    <div class="cyber-modal-container">
+      <div class="window-titlebar">
+        <div class="window-dots">
+          <button class="dot dot-red modal-close-btn" id="closeRecordsModalX" title="Close"></button>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <div class="window-title" id="recordsModalTitle">⚡ Cloud Records • meow-typing</div>
+        <button class="modal-close-icon-btn" id="closeRecordsModalBtn">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- User Summary Banner -->
+        <div class="records-user-banner">
+          <div class="rub-left">
+            <img id="recordsModalAvatar" src="assets/cat-logo.png" alt="User" class="rub-avatar">
+            <div class="rub-info">
+              <h3 id="recordsModalUser" class="rub-name">Typist</h3>
+              <span id="recordsModalEmail" class="rub-email">Cloud Synchronized</span>
+            </div>
+          </div>
+          <div class="rub-right">
+            <button id="refreshRecordsBtn" class="cyber-icon-pill-btn" title="Refresh from Supabase Cloud">
+              <span>🔄 Refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Telemetry Stats Strip -->
+        <div class="records-stats-strip">
+          <div class="rss-card">
+            <span class="rss-lbl">TOTAL TESTS</span>
+            <span class="rss-val" id="rssTotalTests">0</span>
+          </div>
+          <div class="rss-card">
+            <span class="rss-lbl">BEST WPM</span>
+            <span class="rss-val text-neon" id="rssBestWpm">0 WPM</span>
+          </div>
+          <div class="rss-card">
+            <span class="rss-lbl">AVG ACCURACY</span>
+            <span class="rss-val" id="rssAvgAccuracy">100%</span>
+          </div>
+          <div class="rss-card">
+            <span class="rss-lbl">PRACTICE TIME</span>
+            <span class="rss-val" id="rssPracticeTime">0m 0s</span>
+          </div>
+        </div>
+
+        <!-- Records List Table/Container -->
+        <div class="records-table-container">
+          <div class="rtc-header">
+            <span>SAVED TEST RUNS</span>
+            <span class="rtc-sub" id="recordsListStatus">Loading records...</span>
+          </div>
+
+          <div class="records-scrollable-feed" id="recordsFeed">
+            <!-- Dynamically populated records cards -->
+            <div class="empty-records-state" id="emptyRecordsNotice">
+              <div class="empty-icon">🐱</div>
+              <p>No typing records found yet.</p>
+              <span>Complete a typing test or sign in with Google to view your cloud history!</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions-bar">
+          <button id="closeRecordsModalBottomBtn" class="btn-secondary">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL 2: SUPABASE BACKEND CONFIGURATION MODAL
+       ==================================================================== -->
+  <div id="supabaseConfigModal" class="cyber-modal-overlay hidden" role="dialog" aria-modal="true"
+    aria-labelledby="supabaseModalTitle">
+    <div class="cyber-modal-container config-modal-container">
+      <div class="window-titlebar">
+        <div class="window-dots">
+          <button class="dot dot-red modal-close-btn" id="closeConfigModalX" title="Close"></button>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </div>
+        <div class="window-title" id="supabaseModalTitle">⚡ Supabase Backend Settings</div>
+        <button class="modal-close-icon-btn" id="closeConfigModalBtn">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="config-modal-intro">
+          <div class="cmi-icon">⚡</div>
+          <div>
+            <h3>Connect Supabase Backend</h3>
+            <p>Connect your Supabase project to enable <strong>Google Sign-In</strong> and store all user typing records
+              in the cloud.</p>
+          </div>
+        </div>
+
+        <div class="config-status-banner" id="configStatusBanner">
+          <span class="csb-dot" id="csbDot"></span>
+          <span class="csb-text" id="csbText">Status: Checking connection...</span>
+        </div>
+
+        <!-- Config Inputs -->
+        <div class="config-form-group">
+          <label for="cfgSupabaseUrl" class="config-label">
+            <span>Supabase Project URL</span>
+            <span class="cfg-hint">e.g. https://your-project-id.supabase.co</span>
+          </label>
+          <input type="url" id="cfgSupabaseUrl" class="cyber-input" placeholder="https://xxxxxxxxxxxx.supabase.co"
+            autocomplete="off">
+        </div>
+
+        <div class="config-form-group">
+          <label for="cfgSupabaseAnonKey" class="config-label">
+            <span>Supabase Public Anon Key</span>
+            <span class="cfg-hint">From Project Settings > API</span>
+          </label>
+          <input type="password" id="cfgSupabaseAnonKey" class="cyber-input"
+            placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." autocomplete="off">
+        </div>
+
+        <!-- Quick Step Guide -->
+        <div class="config-help-box">
+          <div class="chb-title">📋 Quick Setup in Supabase:</div>
+          <ol class="chb-steps">
+            <li>Open <a href="https://supabase.com/dashboard" target="_blank" rel="noopener">Supabase Dashboard</a> &
+              select your project.</li>
+            <li>Go to <strong>Project Settings → API</strong> to copy your <code>Project URL</code> &
+              <code>anon public key</code>.
+            </li>
+            <li>In <strong>Authentication → Providers → Google</strong>, turn Google on and paste your Google OAuth
+              Credentials.</li>
+            <li>In <strong>Authentication → URL Configuration</strong>, ensure Redirect URL includes
+              <code>http://localhost:3000</code>.
+            </li>
+            <li>In <strong>SQL Editor</strong>, run the included <code>supabase-schema.sql</code> script.</li>
+          </ol>
+        </div>
+
+        <div class="config-actions">
+          <button id="copySqlSchemaBtn" class="btn-secondary" title="Copy SQL schema for Supabase SQL Editor">
+            <span>📋 Copy SQL Schema</span>
+          </button>
+          <button id="clearSupabaseConfigBtn" class="btn-secondary text-danger"
+            title="Reset keys and switch back to local guest mode">
+            <span>Disconnect / Reset</span>
+          </button>
+          <button id="saveSupabaseConfigBtn" class="btn-primary-large">
+            <span>Save & Connect</span>
+            <span>⚡</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cyber Floating Notification Toast -->
+  <div id="cyberToast" class="cyber-toast hidden">
+    <span class="toast-icon" id="toastIcon">⚡</span>
+    <span class="toast-message" id="toastMessage">Action completed</span>
+  </div>
+
+  <!-- Scripts (Self-Hosted Supabase SDK + Auth Service + Game Core) -->
+  <script src="supabase-sdk.js"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="texts.js"></script>
+  <script src="audio.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
